@@ -80,7 +80,7 @@ class Ellipse:
             indicator = False
 
 #делаем уникальный шарик
-class unicue:
+class unique:
     def __init__(self, x_lim=(200, 1000), y_lim=(200, 700), vx_lim=(-5, 5), vy_lim=(-5, 5), r_lim=(50, 200), colors=COLORS,cost_lim=(5,10)):
         self.cost=randint(cost_lim[0], cost_lim[1])
         self.x = randint(x_lim[0], x_lim[1])
@@ -95,12 +95,8 @@ class unicue:
         ellipse(surface, self.color, (self.x, self.y, self.a, self.b))
     
     def boost(self,dt,a=0,x0=0,y0=0):
-        a=1000
-        x0=Ox/2
-        y0=Oy/2
-        r=(self.x-x0)**2+(self.y-y0)**2
-        self.vx -= a * r**(-3/2) *(self.x-x0) * dt
-        self.vy -= a * r**(-3/2) *(self.y-y0) * dt
+        self.vy += g * dt
+        self.vx += g * dt
 
     def change(self,r_lim=(50, 200), colors=COLORS):
         self.color = colors[randint(0, len(colors) - 1)]
@@ -118,7 +114,7 @@ class unicue:
             self.vy = - self.vy
 
 #создаем массив фигур
-N,fig=4,[unicue()]
+N,fig=6,[unique()]
 for i in range(1,N):
     S = randint(0,1)
     if S ==1:
@@ -140,15 +136,11 @@ font2 = pygame.font.SysFont('Comic Sans MS', 30)
 dt=1
 g=1
 count = 0
-none_clicked = True
 
 while not finished:
     clock.tick(FPS)
 
     for event in pygame.event.get():
-        '''if event.type == pygame.MOUSEBUTTONUP:
-            pos = pygame.mouse.get_pos()
-            print(pos)'''
         if event.type == pygame.QUIT:
             finished = True
         elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -157,7 +149,7 @@ while not finished:
                 if (pos[0]-fig[i].x)**2/(fig[i].a**2)+(fig[i].y-pos[1])**2/(fig[i].b**2) <= 1:
                     count += fig[i].cost
                     if i==0:
-                        fig[i]=unicue()
+                        fig[i]=unique()
                     else:
                         S = randint(0,1)
                         if S == 1:
