@@ -17,10 +17,11 @@ MAGENTA = (255, 0, 255)
 CYAN = (0, 255, 255)
 BLACK = (0, 0, 0)
 COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
+COLORS2 = [BLUE, YELLOW]
 
 #создаем шарик
 class Ball:
-    def __init__(self, x_lim=(100, 1100), y_lim=(100, 900), vx_lim=(-10, 10), vy_lim=(-10, 10), r_lim=(50, 100), colors=COLORS, cost=1):
+    def __init__(self, x_lim=(100, 1100), y_lim=(100, 900), vx_lim=(-10, 10), vy_lim=(-10, 10), r_lim=(30, 60), colors=COLORS, cost=1):
         self.cost=cost
         self.x = randint(x_lim[0], x_lim[1])
         self.y = randint(y_lim[0], y_lim[1])
@@ -48,7 +49,7 @@ class Ball:
 
 #создаем еллипс
 class Ellipse:
-    def __init__(self, x_lim=(100, 1100), y_lim=(100, 900), vx_lim=(-10, 10), vy_lim=(-10, 10), r_lim=(50, 100), colors=COLORS, cost=1):
+    def __init__(self, x_lim=(100, 1100), y_lim=(100, 900), vx_lim=(-10, 10), vy_lim=(-10, 10), r_lim=(70, 120), colors=COLORS, cost=1):
         self.cost = cost
         self.x = randint(x_lim[0], x_lim[1])
         self.y = randint(y_lim[0], y_lim[1])
@@ -117,7 +118,7 @@ class unique:
 N,fig=6,[unique()]
 for i in range(1,N):
     S = randint(0,1)
-    if S ==1:
+    if S ==0:
         fig += [Ellipse()]
     else:
         fig += [Ball()]
@@ -152,7 +153,7 @@ while not finished:
                         fig[i]=unique()
                     else:
                         S = randint(0,1)
-                        if S == 1:
+                        if S == 0:
                             fig[i] = Ellipse()
                         else:
                             fig[i] = Ball()
