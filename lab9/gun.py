@@ -334,10 +334,10 @@ class bomb:
     def fire(self):
         if self.count == 0:
             global ball2
-            ball2 += [Ball(self.x, self.y, 0, randint(4, 10), 10, ['RED'])]
+            ball2 += [Ball(self.x, self.y, 0, randint(7, 15), 10, ['RED'])]
 
     def cunt(self):
-        if self.count == 180:
+        if self.count == 120:
             self.count = 0
         else:
             self.count += 1
@@ -421,8 +421,11 @@ finished = False
 index = False
 
 pg.display.set_caption("Gun")
-font1 = pg.font.SysFont('Comic Sans MS', 100)
-font2 = pg.font.SysFont('Comic Sans MS', 30)
+
+pg.mixer.music.load("lab9/Helicopter.mp3")
+pg.mixer.music.play(-1)
+flPause = False
+vol=1.0
 
 for i in range(N):
     target += [Target(screen)]
@@ -483,6 +486,21 @@ while not finished:
             gun.fire2_end(event)
         elif event.type == pg.MOUSEMOTION:
             gun.targetting(event)
+        elif event.type == pg.KEYDOWN:
+            if event.key == pg.K_SPACE:
+                flPause = not flPause
+                if flPause:
+                    pg.mixer.music.pause()
+                else:
+                    pg.mixer.music.unpause()
+            elif event.key == pg.K_LEFT:
+                    vol -= 0.1
+                    pg.mixer.music.set_volume(vol)
+                    print( pg.mixer.music.get_volume() )
+            elif event.key == pg.K_RIGHT:
+                vol += 0.1
+                pg.mixer.music.set_volume(vol)
+                print( pg.mixer.music.get_volume() )
 
     for b in balls:
         if b.live > 0:
