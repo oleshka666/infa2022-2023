@@ -457,7 +457,8 @@ for i in range(N):
 
 for i in range(N_bomb):
     bimb += [bomb()]
-
+    
+pg.mouse.set_visible(False)
 
 while not finished:
     screen.fill([240, 255, 255])
