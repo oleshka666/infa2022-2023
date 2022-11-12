@@ -379,6 +379,31 @@ class Text:
         label = font.render(f'+{self.cost}', True, self.colors)
         screen.blit(label, [self.x, self.y])
 
+class Cursor:
+    def __init__(self, x = 0, y = 0):
+        self.y = y
+        self.x = x
+
+    def cursor_change_pos(self, event):
+        self.x,self.y=event.pos[0],event.pos[1]
+
+    def draw_cursor(self, r = 10):
+        center=np.array([self.x,self.y])
+        circle(screen, Crimson, center, r, round(r/5))
+        circle(screen, BLACK, center, 2)
+
+        p1,p2=np.array([r/2,0])+center, np.array([1.5*r,0])+center
+        pg.draw.line(screen, Crimson, p1, p2, 3)
+
+        c1,c2=np.array([-r/2,0])+center, np.array([-1.5*r,0])+center
+        pg.draw.line(screen, Crimson, c1, c2, 3)
+
+        b1,b2=np.array([0,r/2])+center, np.array([0,1.5*r])+center
+        pg.draw.line(screen, Crimson, b1, b2, 3)
+
+        d1,d2=np.array([0,-r/2])+center, np.array([0,-1.5*r])+center
+        pg.draw.line(screen, Crimson, d1, d2, 3)
+
 
 def display_text(sum_points):
     '''функция выводит базовые надписи на экран'''
@@ -406,7 +431,6 @@ def sum(target):
         s += t.points
     return s
 
-
 pg.init()
 screen = pg.display.set_mode((OX, OY))
 bullet, g, dt = 0, 1, 1
@@ -416,6 +440,7 @@ balls, target, bimb, ball2, txt = [], [], [], [], []
 clock = pg.time.Clock()
 gun = Gun(screen)
 lnd = Land()
+curs=Cursor()
 
 finished = False
 index = False
@@ -438,6 +463,7 @@ while not finished:
     screen.fill([240, 255, 255])
     lnd.shift()
     lnd.draw()
+    
 
     gun.draw_body()
     gun.draw()
@@ -486,6 +512,7 @@ while not finished:
             gun.fire2_end(event)
         elif event.type == pg.MOUSEMOTION:
             gun.targetting(event)
+            curs.cursor_change_pos(event)
         elif event.type == pg.KEYDOWN:
             if event.key == pg.K_SPACE:
                 flPause = not flPause
@@ -526,6 +553,7 @@ while not finished:
         else:
             balls.remove(b)
 
+    curs.draw_cursor()
     gun.power_up()
     pg.font.init()
     pg.display.update()
