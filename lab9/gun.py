@@ -107,8 +107,8 @@ class Ball:
         Returns:    Возвращает True в случае столкновения мяча и цели. В противном случае возвращает False.'''
         return (obj.x-self.x)**2+(obj.y-self.y)**2 <= obj.r**2 + self.r**2
 
-    def hittest_gun(self, obj, r=10, h=30, base1=90, base2=30):
-        if (-6/10*base1 < self.x-obj.x < 3/10*base1) and (0 < self.y-obj.y < h+r):
+    def hittest_gun(self, obj, r=10, h=70, base1=90, base2=30):
+        if ( -45 < self.x-obj.x < 32) and (0 < self.y-obj.y < h+r):
             return True
 
 
