@@ -37,7 +37,7 @@ MediumSpringGreen = [127, 255, 212]
 Aquamarine=(127, 255, 212)
 
 VARCOLORS = [ORANGERED, ORANGE,Gold,Crimson,Salmon,HotPink,MediumVioletRed,GreenYellow,MediumSpringGreen,Aquamarine]
-BALLS_COLORS=[[255, 255, 0],[0, 0, 255]]
+YKRAINE=[BLUE,YELLOW]
 
 OX = 800
 OY = 600
@@ -225,16 +225,16 @@ class Gun:
             [60, 3]
         ])
         pg.draw.polygon(self.surface, YELLOW, [
-            [30, 28],
+            [32, 28],
             [50, 28],
-            [50, 20],
-            [30, 20]
+            [50, 21],
+            [32, 21]
         ])
         pg.draw.polygon(self.surface, [0, 0, 255], [
-            [30, 36],
-            [50, 36],
+            [32, 35],
+            [50, 35],
             [50, 28],
-            [30, 28]
+            [32, 28]
         ])
         pg.draw.polygon(self.surface, [139, 0, 0], [
             [50, 10],
@@ -301,11 +301,11 @@ class Gun:
         keys = pg.key.get_pressed()
         if self.x == 600:
             self.x = 50
-        if self.y <= 40:
+        if self.y <= 100:
             self.y = 500
         if keys[pg.K_d] and (self.x <= 600):
             self.x += step
-        if keys[pg.K_a] and (0 <= self.x):
+        if keys[pg.K_a] and (55 <= self.x):
             self.x -= step
         if keys[pg.K_w] and (40 <= self.y):
             self.y -= step
@@ -388,11 +388,12 @@ class Target:
 
 
 class bomb:
-    def __init__(self):
+    def __init__(self,colors=YKRAINE):
         self.x = randint(5, 600)
         self.y = randint(5, 300)
         self.vx = randint(10, 20)
         self.vy = 0
+        self.colors=colors
         self.r = randint(20, 30)
         self.count = randint(0, 30)
 
@@ -411,7 +412,7 @@ class bomb:
 
     def draw(self, rise=1):
         base = np.array([self.x, self.y])
-        rise = 5  # (200, 175)
+        rise = 2  # (200, 175)
         r = np.array([100, 5, 30, 20, 15, 10])/rise
         beg = np.array([[-50, -25], [50, -25]])/rise+base
         width = np.array([25, 15, 5])/rise
@@ -420,7 +421,8 @@ class bomb:
         coord = np.around(coord).astype(int)
         width = np.around(width).astype(int)
 
-        circle(screen, (255, 255, 0), base, r[0])
+        color=self.colors[randint(0,len(self.colors)-1)]
+        circle(screen, color, base, r[0])
         circle(screen, (0, 0, 0), base, r[0], width[2])
 
         circle(screen, (255, 0, 255), beg[0], r[2])
@@ -558,7 +560,7 @@ flPause = False
 vol=1.0
 
 for i in range(N):
-    target += [Target(screen)]
+    target += [Target(screen, 1)]
 
 for i in range(N_bomb):
     bimb += [bomb()]
