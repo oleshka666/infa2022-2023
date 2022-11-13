@@ -552,8 +552,8 @@ index = False
 
 pg.display.set_caption("Gun")
 
-#pg.mixer.music.load("lab9/Helicopter.mp3")
-#pg.mixer.music.play(-1)
+pg.mixer.music.load("lab9/Helicopter.mp3")
+pg.mixer.music.play(-1)
 flPause = False
 vol=1.0
 
