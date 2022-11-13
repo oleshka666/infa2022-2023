@@ -14,7 +14,8 @@ MAGENTA = 0xFF03B8
 CYAN = 0x00FFCC
 BLACK = (0, 0, 0)
 WHITE = 0xFFFFFF
-GREY = 0x7D7D7D
+GREY = (192, 192, 192)
+VARGREY=(105, 105, 105)
 GAME_COLORS = [RED, BLUE, VARYELLOW, GREEN, MAGENTA, CYAN]
 
 YELLOW = 0xffff00
@@ -33,8 +34,9 @@ HotPink=[255, 105, 180]
 MediumVioletRed=(199, 21, 133)
 GreenYellow=[173, 255, 47]
 MediumSpringGreen = [127, 255, 212]
+Aquamarine=(127, 255, 212)
 
-VARCOLORS = [ORANGERED, ORANGE,Gold,Crimson,Salmon,HotPink,MediumVioletRed,GreenYellow,MediumSpringGreen]
+VARCOLORS = [ORANGERED, ORANGE,Gold,Crimson,Salmon,HotPink,MediumVioletRed,GreenYellow,MediumSpringGreen,Aquamarine]
 BALLS_COLORS=[[255, 255, 0],[0, 0, 255]]
 
 OX = 800
@@ -48,7 +50,7 @@ def turn(point, ang):
 
 
 class Ball:
-    def __init__(self, x=60, y=450, vx=10, vy=10, r=10,colors=GAME_COLORS):
+    def __init__(self, x=60, y=450, vx=10, vy=10, r=10,colors=VARCOLORS):
         """ Конструктор класса ball
         Args:
         x - начальное положение мяча по горизонтали
@@ -91,12 +93,12 @@ class Ball:
                self.r, int(round(self.width, 0)))
         self.width -= self.r/30
 
-    def collision(self, dt):
+    def collision(self, dt, delta = 0.5):
         if not (OX - self.r > self.x + self.vx * dt > self.r):
-            self.count += 1
+            self.count += delta
             self.vx = - self.vx/self.count
         if not (500 - self.r > self.y + self.vy * dt > self.r):
-            self.count += 1
+            self.count += delta
             self.vy = - self.vy/self.count
 
     def hittest(self, obj):
@@ -111,26 +113,29 @@ class Ball:
 
 
 class Gun:
-    def __init__(self, screen, x=60, y=460, COLOR=GREY):
+    def __init__(self, screen, surface, x=60, y=460, COLOR=GREY):
         self.screen = screen
+        self.surface = surface
         self.x = x
         self.y = y
         self.a = 0
         self.color = COLOR
         self.f2_power = 30
         self.f2_on = 0
+        self.shift = True
 
     def fire2_start(self, event):
         self.f2_on = 1
 
     def fire2_end(self, event):
+        gun_l = self.f2_power
         """Выстрел мячом.
         Происходит при отпускании кнопки мыши.
         Начальные значения компонент скорости мяча vx и vy зависят от положения мыши.
         """
         global balls, bullet
         bullet += 1
-        new_ball = Ball(self.x, self.y)
+        new_ball = Ball(self.x + 5 + turn([gun_l + 15, 0], self.a)[0], self.y + 12 + turn([gun_l + 15, 0], self.a)[1])
         new_ball.r += 5
         self.a = - \
             np.arctan2((event.pos[1]-new_ball.y), (event.pos[0]-new_ball.x))
@@ -144,23 +149,123 @@ class Gun:
         """Прицеливание. Зависит от положения мыши."""
         if event:
             self.a = - np.arctan2((event.pos[1]-self.y), (event.pos[0]-self.x))
-        if self.f2_on:
-            self.color = RED
-        else:
-            self.color = GREY
 
     def draw(self):
         gun_w = 10
         gun_l = self.f2_power
 
-        p1 = np.array([self.x, self.y])
-        p2 = np.array([self.x, self.y]) + turn([gun_l, 0], self.a)
-        p3 = np.array([self.x, self.y]) + turn([gun_l, -gun_w], self.a)
-        p4 = np.array([self.x, self.y]) + turn([0, -gun_w], self.a)
+        p1 = np.array([self.x + 5, self.y + 12]) + turn([0, 0.5 * gun_w], self.a)
+        p2 = np.array([self.x + 5, self.y + 12]) + turn([gun_l, 0.5 * gun_w], self.a)
+        p3 = np.array([self.x + 5, self.y + 12]) + turn([gun_l, - 0.5 * gun_w], self.a)
+        p4 = np.array([self.x + 5, self.y + 12]) + turn([0, - 0.5 * gun_w], self.a)
 
         pg.draw.polygon(self.screen, self.color, [p1, p2, p3, p4])
 
-    def draw_body(self, r=10, h=30, base1=90, base2=30, color_tank=VARGREEN1):
+        if self.shift:
+            pg.draw.line(self.screen, VARGREY, p2+(p3-p2)*1/4, p1+(p4-p1)*1/4, round(gun_w/4))
+            pg.draw.line(self.screen, VARGREY, p2+(p3-p2)*3/4, p1+(p4-p1)*3/4, round(gun_w/4))
+        else:
+            pg.draw.line(self.screen, VARGREY, p2+(p3-p2)*2/4, p1+(p4-p1)*2/4, round(gun_w/4))
+            pg.draw.line(self.screen, VARGREY, p2+(p3-p2)*4/4, p1+(p4-p1)*4/4, round(gun_w/4))
+
+        pg.draw.circle(self.screen, [139, 0, 0], [self.x + 5, self.y + 12], 5)
+
+    def draw_body(self, r=10, h=50, base1=110, color_body=VARGREEN1):
+        base = np.array([self.x, self.y])
+        self.surface.fill([240, 255, 255])
+        pg.draw.circle(self.surface, BLUE, [70, 28], 18)
+        pg.draw.circle(self.surface, [0, 0, 255], [70, 28], 18, 2)
+        pg.draw.polygon(self.surface, [240, 255, 255], [
+            [50, 10],
+            [70, 10],
+            [70, 46],
+            [50, 46]
+        ])
+        pg.draw.polygon(self.surface, VARPING, [
+            [50, 10],
+            [70, 10],
+            [70, 20],
+            [50, 20]
+        ])
+        pg.draw.polygon(self.surface, [139, 0, 0], [
+            [50, 10],
+            [70, 10],
+            [70, 20],
+            [50, 20]
+        ],2)
+        pg.draw.polygon(self.surface, VARPING, [
+            [50, 10],
+            [50, 46],
+            [9, 25]
+        ])
+        pg.draw.polygon(self.surface, VARPING, [
+            [70, 30],
+            [86, 30],
+            [86, 26],
+            [70, 26]
+        ])
+        if self.shift:
+            col1 = "BLUE"
+            col2 = "YELLOW"
+            self.shift = False
+        else:
+            col1 = "YELLOW"
+            col2 = "BLUE"
+            self.shift = True
+        pg.draw.polygon(self.surface, col1, [
+            [10, 0],
+            [10, 5],
+            [60, 5],
+            [60, 3]
+        ])
+        pg.draw.polygon(self.surface, col2, [
+            [110, 0],
+            [110, 5],
+            [60, 5],
+            [60, 3]
+        ])
+        pg.draw.polygon(self.surface, YELLOW, [
+            [30, 28],
+            [50, 28],
+            [50, 20],
+            [30, 20]
+        ])
+        pg.draw.polygon(self.surface, [0, 0, 255], [
+            [30, 36],
+            [50, 36],
+            [50, 28],
+            [30, 28]
+        ])
+        pg.draw.polygon(self.surface, [139, 0, 0], [
+            [50, 10],
+            [70, 10],
+            [70, 46],
+            [50, 46]
+        ],2)
+
+        pg.draw.line(self.surface, [139, 0, 0], [55, 44], [55, 50], 2)
+        pg.draw.line(self.surface, [139, 0, 0], [65, 44], [65, 50], 2)
+        pg.draw.line(self.surface, [139, 0, 0], [40, 50], [80, 50], 2)
+        pg.draw.line(self.surface, VARBLACK, [60, 10], [60, 5], 2)
+        pg.draw.circle(self.surface, HotPink, [9, 23], 9)
+        #pg.draw.circle(self.surface, [139, 0, 0], [9, 23], 9,2)
+        pg.draw.circle(self.surface, [139, 0, 0], [9, 23], 2)
+
+        pg.draw.polygon(self.surface, col1, [
+            [0, 25],
+            [18, 21],
+            [18, 25],
+            [0, 21]
+        ])
+        pg.draw.polygon(self.surface, col2, [
+            [7, 14],
+            [11, 32],
+            [7, 32],
+            [11, 14]
+        ])
+        screen.blit(self.surface, [self.x - 55, self.y - 25])
+
+    def vardraw_body(self, r=10, h=30, base1=90, base2=30, color_tank=VARGREEN1):
         base = np.array([self.x, self.y])
         varbase = np.array([self.x, self.y, 0, 0])
 
@@ -211,9 +316,8 @@ class Gun:
         if self.f2_on:
             if self.f2_power < 80:
                 self.f2_power += 1
-            self.color = VARPING
         else:
-            self.color = VARGREEN2
+            self.color = GREY
 
     def new_coords(self):
         self.x = 60
@@ -287,10 +391,10 @@ class bomb:
     def __init__(self):
         self.x = randint(5, 600)
         self.y = randint(5, 300)
-        self.vx = randint(5, 20)
+        self.vx = randint(10, 20)
         self.vy = 0
         self.r = randint(20, 30)
-        self.count = randint(0, 180)
+        self.count = randint(0, 30)
 
     def move(self, dt):
         """Переместить мяч по прошествии единицы времени.
@@ -334,10 +438,10 @@ class bomb:
     def fire(self):
         if self.count == 0:
             global ball2
-            ball2 += [Ball(self.x, self.y, 0, randint(7, 15), 10, ['RED'])]
+            ball2 += [Ball(self.x, self.y, 0, randint(10, 20), 10, ['RED'])]
 
     def cunt(self):
-        if self.count == 120:
+        if self.count == 30:
             self.count = 0
         else:
             self.count += 1
@@ -433,12 +537,13 @@ def sum(target):
 
 pg.init()
 screen = pg.display.set_mode((OX, OY))
+body_surface = pg.surface.Surface([110, 55])
 bullet, g, dt = 0, 1, 1
 N, N_bomb = 2, 5
 balls, target, bimb, ball2, txt = [], [], [], [], []
 
 clock = pg.time.Clock()
-gun = Gun(screen)
+gun = Gun(screen, body_surface)
 lnd = Land()
 curs=Cursor()
 
@@ -447,8 +552,8 @@ index = False
 
 pg.display.set_caption("Gun")
 
-pg.mixer.music.load("lab9/Helicopter.mp3")
-pg.mixer.music.play(-1)
+#pg.mixer.music.load("lab9/Helicopter.mp3")
+#pg.mixer.music.play(-1)
 flPause = False
 vol=1.0
 
@@ -462,13 +567,14 @@ pg.mouse.set_visible(False)
 
 while not finished:
     screen.fill([240, 255, 255])
+    clock.tick(FPS)
     lnd.shift()
     lnd.draw()
     
 
     gun.draw_body()
     gun.draw()
-    gun.move_body(8)
+    gun.move_body(10)
 
     for bo in bimb:
         bo.draw()
@@ -496,13 +602,7 @@ while not finished:
         else:
             ball2.remove(b)
 
-    for t in target:
-        t.draw()
-        t.change_color()
-
     display_text(sum(target))
-
-    clock.tick(FPS)
 
     for event in pg.event.get():
         if event.type == pg.QUIT:
@@ -530,29 +630,40 @@ while not finished:
                 pg.mixer.music.set_volume(vol)
                 print( pg.mixer.music.get_volume() )
 
+    
     for b in balls:
-        if b.live > 0:
-            b.draw()
-            b.stop(dt)
-            b.move(dt)
-            b.boost(g, dt)
-            b.collision(dt)
-            b.live -= 0.25
-            for t in target:
-                t.collision(dt/len(balls))
-                t.correction()
-                t.move(dt/len(balls))
-                t.boost(g/4, dt/len(balls))
+        b.draw()
+        b.stop(dt)
+        b.move(dt)
+        b.boost(g, dt)
+        b.collision(dt)
+        b.live -= 0.25
+    
+    for t in target:
+        t.draw()
+        t.collision(dt)
+        t.correction()
+        t.move(dt)
+        t.boost(g/4, dt)
+        t.change_color()
+        t.draw()
+
+
+    for t in target:
+        hit_n = False
+        for b in balls:
+            if b.live > 0:
                 if b.hittest(t) and t.live:
                     b.live = 0
-                    t.create_text()
-                    t.hit()
-                    t.new_target()
-                    t.draw()
-        elif b.width > 0:
-            b.draw_away()
-        else:
-            balls.remove(b)
+                    hit_n = True       
+            elif b.width > 0:
+                b.draw_away()
+            else:
+                balls.remove(b)
+        if hit_n:
+            t.hit()
+            t.create_text()
+            t.new_target()
 
     curs.draw_cursor()
     gun.power_up()
