@@ -13,27 +13,30 @@ RED = (255, 0, 0)
 AQUA = (0, 255, 255)
 YELLOW = (255, 255, 0)
 GREEN = (0, 255, 0)
-PINK=(255, 0, 255)
+PINK = (255, 0, 255)
 BLACK = (0, 0, 0)
-BLUE=(0, 0, 255)
-COLORS = [RED, AQUA, YELLOW, GREEN, PINK,BLUE]
+BLUE = (0, 0, 255)
+COLORS = [RED, AQUA, YELLOW, GREEN, PINK, BLUE]
 COLORSYCRAINE = [[0, 0, 255], [255, 255, 0]]
 
 ORANGERED = [255, 69, 0]
 ORANGE = [255, 165, 0]
-Gold=[255, 215, 0]
+Gold = [255, 215, 0]
 Crimson = [220, 20, 60]
-Salmon=(250, 128, 114)
-HotPink=[255, 105, 180]
-MediumVioletRed=(199, 21, 133)
-GreenYellow=[173, 255, 47]
+Salmon = (250, 128, 114)
+HotPink = [255, 105, 180]
+MediumVioletRed = (199, 21, 133)
+GreenYellow = [173, 255, 47]
 MediumSpringGreen = [127, 255, 212]
 
-VARCOLORS = [ORANGERED, ORANGE,Gold,Crimson,Salmon,HotPink,MediumVioletRed,GreenYellow,MediumSpringGreen]
+VARCOLORS = [ORANGERED, ORANGE, Gold, Crimson, Salmon,
+             HotPink, MediumVioletRed, GreenYellow, MediumSpringGreen]
 
-fill=[255, 0, 255]
+fill = [255, 0, 255]
 
 # создаем еллипс
+
+
 class Ellipse:
     def __init__(self, gravity=1, x_lim=(100, 1000), y_lim=(100, 800), vx_lim=(-10, 10), vy_lim=(-10, 10), r_lim=(70, 120), colors=VARCOLORS, cost=1):
         self.cost = cost
@@ -44,7 +47,7 @@ class Ellipse:
         self.vy = randint(vy_lim[0], vy_lim[1])
         self.vx = randint(vx_lim[0], vx_lim[1])
         self.color = colors[randint(0, len(colors) - 1)]
-        self.gravity=gravity
+        self.gravity = gravity
 
     def render(self, surface):
         ellipse(surface, self.color, (self.x, self.y, self.a, self.b))
@@ -82,7 +85,7 @@ class Ellipse:
 # делаем уникальный шарик
 
 
-class unique:
+class Unique:
     def __init__(self, x_lim=(200, 1000), y_lim=(200, 700), vx_lim=(-5, 5), vy_lim=(-5, 5), r_lim=(50, 200), colors=COLORS, cost_lim=(5, 10)):
         self.cost = randint(cost_lim[0], cost_lim[1])
         self.x = randint(x_lim[0], x_lim[1])
@@ -92,7 +95,7 @@ class unique:
         self.vy = randint(vy_lim[0], vy_lim[1])
         self.vx = randint(vx_lim[0], vx_lim[1])
         self.color = colors[randint(0, len(colors) - 1)]
-        self.gravity=1
+        self.gravity = 1
 
     def render(self, surface):
         ellipse(surface, self.color, (self.x, self.y, self.a, self.b))
@@ -130,6 +133,7 @@ class unique:
         if event:
             return (event.pos[0]-fig[i].x)**2/(fig[i].a**2)+(fig[i].y-event.pos[1])**2/(fig[i].b**2) <= 1
 
+
 class Text:
     def __init__(self, x, y, cost):
         self.live = 15
@@ -143,9 +147,10 @@ class Text:
         label = font.render(f'+{self.cost}', True, self.color)
         screen.blit(label, [self.x, self.y])
 
-N, fig = 10, [unique()]
+
+N, fig = 10, [Unique()]
 for i in range(1, N):
-    S=randint(0,1)
+    S = randint(0, 1)
     fig += [Ellipse(S)]
 
 clock = pg.time.Clock()
@@ -179,15 +184,15 @@ while not finished:
         elif event.type == pg.MOUSEBUTTONDOWN:
             for i in range(N):
                 if fig[i].hittest(event):
-                    txt+=[Text(fig[i].x,fig[i].y,fig[i].cost,)]
+                    txt += [Text(fig[i].x, fig[i].y, fig[i].cost,)]
                     count += fig[i].cost
                     if i == 0:
-                        fig[i] = unique()
+                        fig[i] = Unique()
                     else:
-                        S=randint(0,1)
+                        S = randint(0, 1)
                         fig[i] = Ellipse(S)
     for i in txt:
-        if i.live>0:
+        if i.live > 0:
             i.draw_text()
             i.live -= 0.5
         else:

@@ -653,6 +653,7 @@ while not finished:
 
     for t in target:
         hit_n = False
+        print(type(t))
         for b in balls:
             if b.live > 0:
                 if b.hittest(t) and t.live:
@@ -671,6 +672,5 @@ while not finished:
     gun.power_up()
     pg.font.init()
     pg.display.update()
-
 
 pg.quit()
